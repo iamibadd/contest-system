@@ -1,0 +1,188 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Contest System API",
+    "version": "1.0.0",
+    "description": "API documentation for the Contest System. This API allows user registration, authentication, contest management, leaderboard retrieval, and contest participation."
+  },
+  "paths": {
+    "/signup": {
+      "post": {
+        "summary": "User Signup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "username": { "type": "string" },
+                  "role": {
+                    "type": "string",
+                    "enum": ["guest", "user", "vip", "admin"]
+                  }
+                },
+                "required": ["email", "password", "username", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Bad request (e.g. validation failure)" }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "User Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful, returns JWT token" },
+          "401": { "description": "Invalid credentials" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/contests": {
+      "get": {
+        "summary": "Get All Contests",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of contests" },
+          "500": { "description": "Internal server error" }
+        }
+      },
+      "post": {
+        "summary": "Create a Contest",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "startTime": { "type": "string" },
+                  "endTime": { "type": "string" },
+                  "accessLevel": { "type": "string" },
+                  "prize": { "type": "string" },
+                  "questions": {
+                    "type": "array",
+                    "items": {}
+                  }
+                },
+                "required": ["title", "description", "startTime", "endTime", "accessLevel", "prize", "questions"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Contest created successfully" },
+          "500": { "description": "Internal server error (validation or save failed)" }
+        }
+      }
+    },
+    "/contests/{id}": {
+      "get": {
+        "summary": "Get Contest Details",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Contest details retrieved" },
+          "404": { "description": "Contest not found" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/leaderboard": {
+      "get": {
+        "summary": "Get Leaderboard",
+        "parameters": [
+          {
+            "name": "contestId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Leaderboard retrieved successfully" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/participate": {
+      "post": {
+        "summary": "Submit Contest Answers",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contestId": { "type": "string" },
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "questionId": { "type": "string" },
+                        "selectedOptions": {
+                          "type": "array",
+                          "items": { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": ["contestId", "answers"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Answers submitted successfully" },
+          "403": { "description": "VIP contest access required" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

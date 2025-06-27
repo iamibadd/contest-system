@@ -1,6 +1,38 @@
 # Contest System Backend
 
-# Installation
+## Features
+
+- **User Authentication** (Signup/Login with JWT)
+- **Role-based Access Control** (`guest`, `user`, `vip`, `admin`)
+- **Rate Limiter**
+- **Contest Management** (Create, View, List)
+- **Contest Participation & Auto Scoring**
+- **Leaderboard by Contest**
+- **Daily Prize Distribution Worker**
+- **Input Validation with** `Joi`
+- **Middleware-based error handling**
+
+## Project Structure
+
+```bash
+├── config/
+├── controllers/
+├── middlewares/
+├── models/
+├── routes/
+├── services/
+├── utils/
+├── validations/
+├── workers/  ← prize distribution cron job
+├── app.js
+├── index.js
+```
+
+## API Docs
+
+Included in `contest-system.json` file.
+
+## Installation
 
 **Clone the repository**
 
